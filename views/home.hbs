@@ -1,0 +1,62 @@
+ <section id="main-slider" class="carousel">
+	<div class="carousel-inner">
+	    <div class="item active">
+	        <div class="container">
+	            <div class="carousel-content">
+	                <h1>Anonymously own one or many phone numbers</h1>
+	                <p class="lead">With full SMS and Voice capabilities<br><a href="/login">Get it now</a></p>
+	            </div>
+	        </div>
+	    </div><!--/.item-->
+	    <div class="item">
+	        <div class="container">
+	            <div class="carousel-content">
+	                <h1>Pay as you go</h1>
+	                <p class="lead">Extremely low price for each SMS, or any voice minute <br>Low monthly retaining cost</p>
+	            </div>
+	        </div>
+	    </div><!--/.item-->
+	    <div class="item">
+	        <div class="container">
+	            <div class="carousel-content">
+	                <h1>One place to manage all your numbers</h1>
+	                <p class="lead">Forward SMS to another nubmer, or email</p>
+	            </div>
+	        </div>
+	    </div><!--/.item-->
+	</div><!--/.carousel-inner-->
+	<a class="prev" href="#main-slider" data-slide="prev"><i class="fa fa-angle-left"></i></a>
+	<a class="next" href="#main-slider" data-slide="next"><i class="fa fa-angle-right"></i></a>
+</section><!--/#main-slider-->
+
+{{#if user}}
+{{else}}
+<section id="pricing">
+    <div class="container">    
+    <div class="big-gap"></div>    	
+        <div class="center">
+            <h1>Simple, Straightforward Pricing</h1>               
+        </div><!--/.center-->              
+        <div class="center">
+            <ul class="plan">
+                <li class="plan-name">Pay per usage</li>                        
+                <li>Monthly number retainer - $2</li>
+                <li>Cost per SMS - $0.01</li>
+                <li>Cost per minute - $0.01</li>                                                
+                <li class="plan-action"><a href="/login" class="btn btn-success btn-lg">Signup</a></li>
+            </ul>
+        </div>                                 
+    </div>
+</section><!--/#pricing-->
+
+<section id="contact">
+    <div class="container">
+        <div class="big-gap">
+            <div class="center">                
+                    <h1>Contact Us</h1>       
+                    Email: support@morephone.us                                   
+            </div>
+        </div>
+    </div><!--/.container-->
+</section><!--/#contact-->
+{{/if}}

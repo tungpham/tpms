@@ -1,0 +1,34 @@
+{
+  "name": "myapp",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "tim": "set DEBUG=myapp:* & nodemon ./bin/www",
+    "debug": "set DEBUG=myapp:* & node-debug ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.13.2",
+    "connect-flash": "^0.1.1",
+    "connect-redis": "^3.0.2",
+    "debug": "~2.2.0",
+    "express": "~4.13.1",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.13.0",
+    "express-stormpath": "^3.0.1",
+    "mongodb": "^2.1.7",
+    "mongoose": "^4.4.7",
+    "morgan": "~1.6.1",
+    "paypal-rest-sdk": "^1.6.8",
+    "redis": "^2.5.2",
+    "sendgrid": "^2.0.0",
+    "serve-favicon": "~2.3.0",
+    "stormpath": "^0.17.5",
+    "stripe": "^4.4.0",
+    "twilio": "^2.9.0",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.9.1"
+  }
+}

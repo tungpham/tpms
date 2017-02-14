@@ -1,0 +1,41 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+  <h3 class="page-header">SMS Conversations</h3>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Date Sent</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Body</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#messages}}
+        <tr id="{{sid}}">
+          <td>{{date_sent}}</td>
+          <td>{{from}}</td>
+          <td>{{to}}</td>
+          <td>{{body}}</td> 
+          <td>{{status}}</td>
+          <td><span class="glyphicon glyphicon-remove" style="color:red" onclick="rm('{{sid}}')" /></td>        
+        </tr>
+        {{/messages}}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script type="text/javascript">
+  function rm(id) {
+    if(confirm('Are you sure?')) {
+      $.post('/private/messages/delete', {sid: id}, function(res, status) {          
+          document.getElementById(id).remove();
+      });      
+    }
+  }
+</script>

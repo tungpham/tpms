@@ -1,0 +1,29 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+<h3>Current month</h3>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Numbers</th>
+          <th>SMS (counts)</th>
+          <th>Voice (mins)</th>
+          <th>Amount ($)</th>
+        </tr>
+      </thead>
+      <tbody>        
+        <tr>
+          <td>{{usage.phonenumbers}}</td>
+          <td>{{usage.sms}}</td>
+          <td>{{usage.calls}}</td>     
+          <td>{{format usage.totalprice}}</td>
+        </tr>      
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+
+</div>

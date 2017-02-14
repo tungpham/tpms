@@ -1,0 +1,32 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+  <h1 class="page-header">Dashboard</h1>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Friendly Name</th>
+          <th>Number</th>          
+          <th></th>
+          <th></th>          
+        </tr>
+      </thead>
+      <tbody>
+        {{#each numbers}}       
+        <tr>
+          <td><a href="/private/number/{{this.phoneNumber}}">{{this.friendlyName}}</a></td>
+          <td>{{this.phoneNumber}}</td>        
+          <td><a href="/private/messages/{{this.phoneNumber}}">Messages</a></td>
+          <td><a href="/private/calls/{{this.phoneNumber}}">Voices</a></td>               
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <hr>
+
+    <a class="btn btn-primary" href="/private/number/find">Get new number</a>
+
+  </div>
+  
+</div>

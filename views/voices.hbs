@@ -1,0 +1,67 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+  <h1 class="page-header">Calls list</h1>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Direction</th>
+          <th>From</th>
+          <th>To</th>          
+          <th>Status</th>
+          <th>Recording</th>
+          <th>Duration (sec)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#voices}}
+        <tr>
+          <td>{{date_created}}</td>
+          <td>{{direction}}</td>
+          <td>{{from_formatted}}</td>
+          <td>{{to_formatted}}</td> 
+          <td>{{status}}</td> 
+          <td>
+            <audio id="{{sid}}" preload='none' autoplay="true"></audio>            
+            <button data-loading-text="<i class='fa fa-refresh fa-spin'></i>" data-sid={{sid}}><span class="glyphicon glyphicon-play-circle"></span></button>
+          </td>  
+          <td>{{duration}}</td>     
+        </tr>
+        {{/voices}}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script type="text/javascript">
+
+  $(function() { 
+    $("button[data-loading-text]").click(function() {
+      
+      var btn = $(this);
+      btn.button('loading');
+
+      var sid = btn.data('sid');
+
+      $.ajax({
+        url: '/private/calls/recording/' + sid,
+        success: function(data) {
+          var audio = document.getElementById(sid);
+          audio.src = data;
+          btn.delay(500).queue(function() {
+            btn.button('reset');
+            btn.dequeue();
+          });        
+        },
+        error: function(xhr) {
+          alert('no data available');
+          btn.button('reset');
+        },
+        timeout: 10000
+      });
+    });
+  }); 
+
+</script>

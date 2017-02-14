@@ -1,0 +1,59 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+<h1 class="page-header">Find available numbers</h1>
+
+<form method="POST" action="/private/number/find" role="form">
+	Area code <input type="text" name="areacode" size="3" maxlength="3">
+	<input type="submit" value="Search">
+</form>
+
+<hr>
+
+<h3>Results</h3>
+	<div class="table-responsive">
+		<table class="table table-striped">
+		  <thead>
+		    <tr>
+		      <th>Number</th>
+		      <th>State</th>          
+		      <th>City</th>
+		      <th>Zipcode</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    {{#numbers}}       
+		    <tr>
+		      <td>{{phone_number}}</td>
+		      <td>{{region}}</td>        
+		      <td>{{rate_center}}</td>
+		      <td>{{postal_code}}</td>   
+		      {{!-- <td><button class="btn btn-success btn-sm" onclick="window.location.href='/private/number/{{phone_number}}'">Choose</button></td>   --}}
+		      <td><button class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal7856305279">Choose</button></td> 
+		    </tr>		   
+		    {{/numbers}}
+
+		  </tbody>
+		</table>
+	</div>
+
+</div>
+
+ <!-- Buy number Modal -->
+<div id="myModal7856305279" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Buy this phone number</h4>
+      </div>
+      <div class="modal-body">
+        <p>{{phone_number}}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>

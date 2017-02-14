@@ -1,0 +1,64 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+<h3>{{number.phoneNumber}}</h3>	
+
+<form method="POST" action="/private/number/update" class="form-inline">
+	<div class="form-group">
+	    <label for="friendlyName">Friendly Name</label>
+	    <input name="friendlyName" id="friendlyName" type="text" class="form-control input-sm" value="{{number.friendlyName}}" placeholder="{{number.phoneNumber}}">
+ 	</div>	
+	<input type="hidden" name="sid" value="{{number.sid}}">
+	<button type="submit" class="btn btn-primary btn-sm">Save</button>
+</form>
+
+<hr>
+
+<h4>Send Message</h4>
+<form method="POST" action="/private/number/send" >
+	<div class="form-group">	
+	    <label for="to">To</label>
+	    <input class="form-control input-sm" name="to" id="to" type="text">     
+	</div>	    
+	<div class="form-group">
+		<label for="body">Body</label>
+	    <textarea class="form-control" name="body" id="body" rows="3" cols="30"></textarea>
+ 	</div>	
+ 	<input type="hidden" name="sid" value="{{number.sid}}">
+ 	<input type="hidden" name="from" value="{{number.phoneNumber}}">
+ 	<button type="submit" class="btn btn-primary btn-sm">Send</button>
+</form>
+<hr>
+
+<h4>Configure SMS Forwarding</h4>
+<form method="POST" action="/private/number/updateforwarding" class="form-group">
+	<div class="radio">		
+		<label>
+			<input type="radio" name="optradio" id="optradio1" value="default" {{isSelected number.smsUrl 'default'}}>
+			None
+		</label>
+	</div>
+	<div class="radio">	
+		<label>
+			<input type="radio" name="optradio" id="optradio2" value="phone" {{isSelected number.smsUrl 'phone'}}>
+			Phone <input class="form-control input-sm" name="phone" type="text" size="9" maxlength="11" value={{getPhoneValue number.smsUrl}}>
+		</label>	
+	</div>
+	<div class="radio">
+		<label>
+			<input type="radio" name="optradio" id="optradio3" value="email" {{isSelected number.smsUrl 'email'}}>
+			Email <input class="form-control input-sm" name="email" type="email" size="20" maxlength="25" value={{getEmailValue number.smsUrl}}>
+		</label>
+	</div>	
+	<input type="hidden" name="sid" value="{{number.sid}}">
+	<button type="submit" class="btn btn-primary btn-sm">Save</button>
+</form>
+
+<hr>
+<div class="col-xs-12" style="height:50px;"></div>
+
+<form method="POST" action="/private/number/delete">
+	<input type="hidden" name="phoneNumber" value="{{number.phoneNumber}}">
+	<input type="submit" value="Release Number" class="btn btn-danger" onclick="return confirm('Are you sure');"></input>
+</form>
+
+</div>

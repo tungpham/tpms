@@ -1,0 +1,109 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+  
+  <h3>Balance</h3>
+
+  <h3>{{format user.customData.credits}}</h3>
+
+  <hr>
+  <h3 class="page-header">Fund your account</h3>
+
+  <table class="table-condensed" border="0">
+  	<tr>
+  		<th rowspan="2">
+  		<div class="radio">
+	  		<label><input type="radio" name="optradio" id="predefine" checked="true">
+			  <select id="amount" class="form-control">		  	
+			    <option value="5">$5</option>
+			    <option value="10">$10</option>
+			    <option value="25">$25</option>		    
+			    <option value="50">$50</option>
+			    <option value="100">$100</option>
+			  </select>
+			</label>
+		</div>  		
+		<div class="radio">
+			<label><input type="radio" name="optradio" id="free">
+				<input type="text" size="6" id="other"> $
+		</label>
+		</div>
+  		</th>  		
+  		<td><button id="purchase" class="btn btn-primary"><i class="fa fa-credit-card"></i> Credit Card</button></td>
+  	</tr>
+  	<tr>	  		
+  		<td>
+		  	<a href="#"><img src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" align="left" style="margin-right:7px;" id="paypal"></a>	
+		</td>
+  	</tr>
+  </table>
+
+
+{{!--   <form action="/private/createwebprofile" method="POST">
+  	<button type="submit">Create</button>
+  </form> --}}
+
+
+  <script src="https://checkout.stripe.com/checkout.js"></script>
+ 
+  <script>
+
+  	function getAmount() {
+  		if(document.getElementById('predefine').checked) {
+			return document.getElementById('amount').value;			
+		} else if(document.getElementById('free').checked) {
+			return document.getElementById('other').value;			
+		} else {
+			alert('Please selected an amount');
+			return null;
+		}
+  	}
+
+	$('#paypal').on('click', function(e) {
+		e.preventDefault();
+		var amount = getAmount();
+		if(amount) {
+			window.location.href="/private/paypal?amount=" + amount;					
+		}
+	});
+	
+	//stripe processing
+	var handler = StripeCheckout.configure({
+	    key: '{{pk_key}}',
+	    image: '',
+	    locale: 'auto',
+	    token: function(token) {
+	      // Use the token to create the charge with a server-side script.
+	      // You can access the token ID with `token.id`
+	      // var amount = document.getElementById('amount').value;	      	     	      
+	      var amount = getAmount();
+	      if(amount) {
+	      	$.post('/private/credits', {token: token.id, amount: amount}, function(res, status) {
+	      		//re render this page to reflect the new credits
+	      		location.reload();
+	      	});
+	  	  }
+		}
+  	});
+
+	$('#purchase').on('click', function(e) {
+		// Open Checkout with further options
+		// var amount = document.getElementById('amount').value;		
+		var amount = getAmount();
+		if(amount) {
+			handler.open({
+			  name: 'MOREPHONE.US',
+			  description: 'Purchasing Credits',
+			  amount: amount*100,
+			  email: '{{user.email}}'
+			});
+			e.preventDefault();
+		}
+	});
+
+	// Close Checkout on page navigation
+	$(window).on('popstate', function() {
+		handler.close();				
+	});	
+
+  </script>
+
+</div>
