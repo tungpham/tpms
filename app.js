@@ -1,4 +1,3 @@
-
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -8,7 +7,7 @@ var bodyParser = require('body-parser');
 var stormpath = require('express-stormpath');
 var async = require('async');
 
-//session 
+//session
 var session = require('express-session');
 
 var exphbs = require('express-handlebars');
@@ -22,7 +21,7 @@ var __ = require('underscore');
 var app = express();
 
 //Twilio
-var client = require('./util/twilioClient'); 
+var client = require('./util/twilioClient');
 
 var PhoneNumber = require('./models/PhoneNumber');
 
@@ -31,8 +30,8 @@ var helpers = require('./util/helpers');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('.hbs', exphbs({
-  defaultLayout: 'single', 
-  extname: '.hbs', 
+  defaultLayout: 'single',
+  extname: '.hbs',
   helpers: helpers
 }));
 app.set('view engine', '.hbs');
@@ -47,11 +46,11 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-//public route, declare before session because we don't want to use session here. 
+//public route, declare before session because we don't want to use session here.
 //but somehow stormpath.getUser doesn't work because there's no cookie on the req object
 // app.use('/', stormpath.getUser, public);
 
-//start using session 
+//start using session
 if(app.get('env') === 'development') {
   app.use(session({
     secret: process.env.EXPRESS_SECRET,
@@ -59,7 +58,7 @@ if(app.get('env') === 'development') {
     resave: false,
     saveUninitialized: false
   }));
-} 
+}
 else {
   //production
   var redis = require("redis");
@@ -70,7 +69,7 @@ else {
       console.log("redisClient " + err);
   });
   var RedisStore = require('connect-redis')(session);
-  app.use(session({  
+  app.use(session({
     store: new RedisStore({
       client: redisClient,
 
@@ -79,15 +78,15 @@ else {
     cookie: {secure: 'auto'},
     resave: false,
     saveUninitialized: false,
-  }));  
+  }));
 }
 
 //check for session here, if it doesn't exist, then try to reconnect to redis
 app.use(function (req, res, next) {
   if (!req.session) {
-    return next(new Error('oh no how come theres no session')); // handle error 
-  } 
-  next(); //otherwise moving on  
+    return next(new Error('oh no how come theres no session')); // handle error
+  }
+  next(); //otherwise moving on
 });
 
 // our custom code to remove session created by express-session after user log out
@@ -119,8 +118,8 @@ app.use(stormpath.init(app, {
   postRegistrationHandler: function(account, req, res, next) {
     async.parallel([
       // Set the user's default settings.
-      function(cb) {        
-        account.customData.credits = 0;   
+      function(cb) {
+        account.customData.credits = 0;
         cb();
       },
       // Create an API key for this user.
@@ -142,9 +141,9 @@ app.use(stormpath.init(app, {
           account.customData.accountSid = twilioAccount.sid;
           account.customData.save(function(error) {
             if(error) return cb(error);
-            
+
             cb();
-          })          
+          })
         });
       }
     ], function(err) {
@@ -174,7 +173,7 @@ function initPhoneNumbers(req, res, next) {
           next(err);
         } else {
           data.incoming_phone_numbers.forEach(function(num) {
-            phoneNumbers[num.phone_number] = new PhoneNumber(num);  
+            phoneNumbers[num.phone_number] = new PhoneNumber(num);
           });
           req.session.phoneNumbers = phoneNumbers;
           console.log('init phoneNumbers to session ' + req.session.phoneNumbers);
@@ -182,7 +181,7 @@ function initPhoneNumbers(req, res, next) {
         }
       });
 
-    } 
+    }
     else {
       console.log('phoneNumbers already in session');
       // console.log(req.session.phoneNumbers);
