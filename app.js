@@ -1,36 +1,33 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const stormpath = require('express-stormpath');
+const async = require('async');
+const session = require('express-session');
+const exphbs = require('express-handlebars');
 
-var stormpath = require('express-stormpath');
-var async = require('async');
+/**** Router Init ****/
+const routerFrontend = require('./routes/frontend');
+const routerBackend = require('./routes/private');
 
-//session
-var session = require('express-session');
+const __ = require('underscore');
+const app = express();
 
-var exphbs = require('express-handlebars');
+/**** Twilio Init ****/
+const client = require('./util/twilioClient');
+const helpers = require('./util/helpers');
 
-//routes
-var public = require('./routes/public')
-var private = require('./routes/private');
+/**** Controllers Init ****/
+// const mobileControllers = require('./controllers/mobileControllers');
 
-var __ = require('underscore');
-
-var app = express();
-
-//Twilio
-var client = require('./util/twilioClient');
-
-var PhoneNumber = require('./models/PhoneNumber');
-
-var helpers = require('./util/helpers');
-
-// view engine setup
+/**
+ * View engine setup using handerbarjs
+ */
 app.set('views', path.join(__dirname, 'views'));
 app.engine('.hbs', exphbs({
-  defaultLayout: 'single',
+  defaultLayout: 'default', // see view/layouts/default.hsb
   extname: '.hbs',
   helpers: helpers
 }));
@@ -38,7 +35,9 @@ app.set('view engine', '.hbs');
 
 /****** Middlewares ******/
 
-//static shit
+/**
+ * Static data as css, javascript, image. All in folders public
+ */
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -46,11 +45,10 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-//public route, declare before session because we don't want to use session here.
-//but somehow stormpath.getUser doesn't work because there's no cookie on the req object
-// app.use('/', stormpath.getUser, public);
-
-//start using session
+/**
+ * Start using session
+ * If Production isset redis, save cache
+ */
 if(app.get('env') === 'development') {
   app.use(session({
     secret: process.env.EXPRESS_SECRET,
@@ -60,7 +58,6 @@ if(app.get('env') === 'development') {
   }));
 }
 else {
-  //production
   var redis = require("redis");
   var redisClient = redis.createClient({
     url: process.env.REDISCLOUD_URL
@@ -81,15 +78,20 @@ else {
   }));
 }
 
-//check for session here, if it doesn't exist, then try to reconnect to redis
+/**
+ * Check for session here
+ * If it doesn't exist, then try to reconnect to redis
+ */
 app.use(function (req, res, next) {
   if (!req.session) {
-    return next(new Error('oh no how come theres no session')); // handle error
+    return next(new Error('oh no how come theres no session'));
   }
-  next(); //otherwise moving on
+  next();
 });
 
-// our custom code to remove session created by express-session after user log out
+/**
+ * Remove session created by express-session after user log out
+ */
 app.post('/logout', function(req, res, next) {
   req.session.destroy(function(err) {
     if(err) console.log('err in destroying session');
@@ -99,7 +101,9 @@ app.post('/logout', function(req, res, next) {
   next();
 });
 
-//stormpath init
+/**
+ * Stormpath Init
+ */
 app.use(stormpath.init(app, {
   website: true,
   api: true,
@@ -116,6 +120,7 @@ app.use(stormpath.init(app, {
     }
   },
   postRegistrationHandler: function(account, req, res, next) {
+    // Note: use Promise later
     async.parallel([
       // Set the user's default settings.
       function(cb) {
@@ -156,48 +161,38 @@ app.use(stormpath.init(app, {
   }
 }));
 
+/**
+ * Route initialization. Frontend and Backend
+ */
 
-//init phoneNumbers in session
+app.use('/', stormpath.getUser, routerFrontend);
+app.use('/private', stormpath.loginRequired, initPhoneNumbers, routerBackend);
+
 function initPhoneNumbers(req, res, next) {
-  console.log('initPhoneNumbers ');
-
-  if(req.session) {
-    console.log('session exist');
-    if(!req.session.phoneNumbers) {
-      console.log('no phoneNumbers in session yet');
-      var phoneNumbers = {};
-
-      client.accounts(req.user.customData.accountSid).incomingPhoneNumbers.list(function(err, data) {
-        if(err) {
-          console.log(err);
-          next(err);
-        } else {
-          data.incoming_phone_numbers.forEach(function(num) {
-            phoneNumbers[num.phone_number] = new PhoneNumber(num);
-          });
-          req.session.phoneNumbers = phoneNumbers;
-          console.log('init phoneNumbers to session ' + req.session.phoneNumbers);
-          next();
-        }
-      });
-
-    }
-    else {
-      console.log('phoneNumbers already in session');
-      // console.log(req.session.phoneNumbers);
-      next();
-    }
-  }
-  else {
+  console.log('Init phoneNumbers');
+  if(!req.session) {
     console.log('no session created yet on req');
     next();
   }
+  if(req.session.phoneNumbers) {
+    console.log('phoneNumbers already in session');
+    next();
+  }
+
+  const phoneNumbers = {};
+  twilioClient.accounts(req.user.customData.accountSid).incomingPhoneNumbers.list(function(err, data) {
+    if(err) {
+      console.log(err);
+      next(err);
+    } else {
+      data.incoming_phone_numbers.forEach(function(num) {
+        phoneNumbers[num.phone_number] = new PhoneNumber(num);
+      });
+      req.session.phoneNumbers = phoneNumbers;
+      next();
+    }
+  });
 };
-
-app.use('/', stormpath.getUser, public);
-
-//routes to be protected by stormpath
-app.use('/private', stormpath.loginRequired, initPhoneNumbers, private);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -207,26 +202,11 @@ app.use(function(req, res, next) {
 });
 
 //****************** error handlers ******************//
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
-    error: {}
+    error: (app.get('env') === 'development') ? err : {}
   });
 });
 

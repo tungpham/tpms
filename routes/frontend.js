@@ -1,10 +1,14 @@
 var express = require('express');
 var router = express.Router();
-var stormpath = require('express-stormpath');
 
 /* GET home page. */
-router.get('/', function(req, res) {		
-	res.render('home', {title: 'Virtual Phone Managment System', user: req.user});
+router.get('/', function(req, res) {
+	const data = {
+		layout: false,
+		title: 'Virtual Phone Managment System',
+		user: req.user
+	}
+	res.render('pages/home', data);
 });
 
 /********** Twilio app **********/
@@ -18,7 +22,7 @@ router.post('/forward/:number', function(req, res) {
 });
 
 router.get('/forwardToEmail', function(req, res) {
-	res.render('forwardToEmail');
+	res.render('pages/forwardToEmail');
 });
 
 //forward to email
@@ -28,7 +32,7 @@ router.post('/forwardToEmail/:to', function(req, res, next) {
 	console.log('to is ' + to);
 
 	var body = req.body.Body;
-	
+
 	console.log('body is ' + body);
 
 	if(body) {

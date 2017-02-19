@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 //Twilio credential
-var client = require('../../util/twilioClient');
+const client = require('../../util/twilioClient');
 
 var __ = require('underscore');
 
@@ -10,7 +10,7 @@ var __ = require('underscore');
 router.get('/:number([\+][0-9]{11})', function(req, res) {
 	var number = req.params.number;
 	console.log('query sms for ' + number);
-	
+
 	client.accounts(req.user.customData.accountSid).messages.list(function(err, data) {
 		var messages = data.messages;
 
@@ -19,8 +19,8 @@ router.get('/:number([\+][0-9]{11})', function(req, res) {
 			return ((msg.from == number && msg.status === 'delivered') || (msg.to == number && msg.status === 'received'));
 		});
 
-		res.render('messages', {messages: messages});	
-	});	
+		res.render('messages', {messages: messages});
+	});
 });
 
 //delete the message
@@ -34,7 +34,7 @@ router.post('/delete', function(req, res) {
 		} else {
 			console.log('message deleted successfully');
 			res.sendStatus(200);
-		}		
+		}
 	});
 });
 

@@ -4,7 +4,7 @@ var client = require('../../util/twilioClient');
 
 var paypal = require('paypal-rest-sdk');
 var config = {
- 	"mode": process.env.PP_mode,            
+ 	"mode": process.env.PP_mode,
 	"client_id" : process.env.PP_client_id,
 	"client_secret" : process.env.PP_client_secret
 };
@@ -53,11 +53,11 @@ router.post('/credits', function (req, res) {
 
 	  }
 
-	});	
+	});
 });
 
 /* Paypal */
-router.get('/paypal', function(req, res) {	
+router.get('/paypal', function(req, res) {
 
 	var amount = req.query.amount;
 	console.log('paypal amount is ' + amount);
@@ -70,7 +70,7 @@ router.get('/paypal', function(req, res) {
 	  "intent": "sale",
 	  "payer": {
 	    "payment_method": "paypal"
-	  },	  
+	  },
 	  "experience_profile_id": "XP-HFBN-DRCS-X5HJ-F55L", //prod
 	  "redirect_urls": {
 	    "return_url": base + "/private/execute",
@@ -123,14 +123,14 @@ router.get('/execute', function(req, res) {
 			console.log(error);
 			res.render('error', { 'error': error });
 		} else {
-			req.user.customData.credits = Number(req.user.customData.credits) + Number(payment.transactions[0].amount.total)*100;			
-			req.user.customData.save(function(error) {				
+			req.user.customData.credits = Number(req.user.customData.credits) + Number(payment.transactions[0].amount.total)*100;
+			req.user.customData.save(function(error) {
 				if(error)
 					res.render('error', {'error': error});
 				else
-					res.redirect('/private/credits');	
+					res.redirect('/private/credits');
 			});
-			
+
 		}
 	});
 });
@@ -142,7 +142,7 @@ router.get('/execute', function(req, res) {
 // 	var create_web_profile_json = {
 // 	    "name": profile_name,
 // 	    "presentation": {
-// 	        "brand_name": "MOREPHONE",	     
+// 	        "brand_name": "MOREPHONE",
 // 	        "locale_code": "US"
 // 	    },
 // 	    "input_fields": {
@@ -151,7 +151,7 @@ router.get('/execute', function(req, res) {
 // 	        "address_override": 1
 // 	    },
 // 	    "flow_config": {
-// 	        "landing_page_type": "billing"	       
+// 	        "landing_page_type": "billing"
 // 	    }
 // 	};
 
